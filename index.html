@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Hugo Lam — Portfolio</title>
+	<meta name="description" content="Portfolio of Hugo Lam — MSc student in Mechanical Engineering (Aerodynamics), CFD and numerical simulation." />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+	<style>
+		/* ================= COULEURS : modifie ici pour changer tout le site ================= */
+		:root {
+			--base: #2b382d;       /* vert forêt grisé (haut, "brume") */
+			--mid: #1c261d;        /* vert sapin sombre */
+			--deep: #0f1510;       /* presque noir, vert profond (bas) */
+			--card: rgba(255, 255, 255, .035);
+			--border: rgba(210, 220, 200, .10);
+			--accent: #b3bea6;     /* vert sauge pâle, couleur de la brume */
+			--accent-soft: rgba(179, 190, 166, .10);
+			--text: #e6e9e1;
+			--muted: rgba(230, 233, 225, .60);
+			--radius: 12px;
+			--side: 340px;         /* largeur de la colonne de gauche */
+		}
+
+		* { box-sizing: border-box; margin: 0; padding: 0; }
+		html { scroll-behavior: smooth; }
+		body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); line-height: 1.6;
+			background:
+				radial-gradient(ellipse 90% 45% at 50% 0%, rgba(160, 172, 152, .10), transparent 70%),
+				linear-gradient(180deg, var(--base) 0%, var(--mid) 40%, var(--deep) 100%);
+			background-attachment: fixed; }
+		a { color: inherit; text-decoration: none; }
+		img { max-width: 100%; display: block; }
+		.mono { font-family: 'JetBrains Mono', monospace; }
+
+		/* ============ MISE EN PAGE : colonne fixe à gauche + contenu à droite ============ */
+		.layout { display: grid; grid-template-columns: var(--side) 1fr; min-height: 100vh; }
+
+		/* ---------- Colonne de gauche ---------- */
+		.side { position: sticky; top: 0; height: 100vh; padding: 56px 40px; display: flex; flex-direction: column; border-right: 1px solid var(--border); background: rgba(0, 0, 0, .18); }
+		.side .role { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: var(--accent); margin-bottom: 14px; }
+		.side h1 { font-size: 2.4rem; line-height: 1.05; font-weight: 700; letter-spacing: -.02em; margin-bottom: 40px; }
+		.side .pitch { color: var(--muted); font-size: .95rem; margin-bottom: 40px; }
+		.side nav ol { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+		.side nav a { display: flex; align-items: center; gap: 14px; padding: 9px 0; color: var(--muted); font-size: .92rem; transition: color .2s; }
+		.side nav a .n { font-family: 'JetBrains Mono', monospace; font-size: .72rem; width: 22px; }
+		.side nav a .bar { height: 1px; width: 22px; background: var(--muted); transition: width .25s, background .25s; }
+		.side nav a:hover, .side nav a.active { color: var(--text); }
+		.side nav a.active .bar, .side nav a:hover .bar { width: 44px; background: var(--accent); }
+		.side .bottom { margin-top: auto; display: flex; flex-direction: column; gap: 14px; }
+		.side .status { display: flex; align-items: center; gap: 10px; font-size: .82rem; color: var(--muted); }
+		.side .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+		.side .socials { display: flex; gap: 16px; font-size: .85rem; }
+		.side .socials a { color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+		.side .socials a:hover { color: var(--accent); border-color: var(--accent); }
+
+		/* ---------- Contenu ---------- */
+		main { padding: 0 64px; max-width: 980px; }
+		section { padding: 96px 0; border-bottom: 1px solid var(--border); }
+		section:last-of-type { border-bottom: 0; }
+		#about { padding-bottom: 40px; border-bottom: 0; }
+		#experience { padding-top: 0; }
+		.sec-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 40px; }
+		.sec-head .n { font-family: 'JetBrains Mono', monospace; color: var(--accent); font-size: .85rem; }
+		.sec-head h2 { font-size: clamp(1.7rem, 3vw, 2.2rem); font-weight: 700; letter-spacing: -.01em; }
+		.sec-head p { color: var(--muted); font-size: .92rem; margin-left: auto; }
+
+		/* ---------- 01 À propos ---------- */
+		.intro { font-size: 1.12rem; color: var(--muted); max-width: 680px; margin-bottom: 14px; }
+		.intro strong { color: var(--text); font-weight: 600; }
+
+		/* ---------- 02 Expériences ---------- */
+		.exps { display: flex; flex-direction: column; gap: 18px; }
+		.exp { display: grid; grid-template-columns: 88px 1fr; gap: 22px; padding: 26px; border-radius: var(--radius); background: var(--card); border: 1px solid var(--border); }
+		.exp .logo { width: 88px; height: 64px; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 6px;
+			font-family: 'JetBrains Mono', monospace; color: #555; font-size: .7rem; }
+		.exp .logo img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+		.exp .top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+		.exp h3 { font-size: 1.15rem; }
+		.exp .when { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: var(--muted); white-space: nowrap; }
+		.exp .where { color: var(--accent); font-size: .93rem; margin: 2px 0 12px; }
+		.exp ul { padding-left: 18px; margin-bottom: 14px; }
+		.exp li { color: var(--muted); font-size: .92rem; margin-bottom: 4px; }
+		.exp .foot { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
+		.more { background: none; border: 1px solid var(--accent); color: var(--accent); font: inherit; font-size: .85rem; font-weight: 600; padding: 7px 14px; border-radius: 8px; cursor: pointer; transition: background .2s; }
+		.more:hover { background: var(--accent-soft); }
+
+		/* ---------- 03 Projets : liste en lignes ---------- */
+		.plist { display: flex; flex-direction: column; gap: 14px; }
+		.prow { display: grid; grid-template-columns: 220px 1fr; gap: 26px; padding: 16px; border-radius: var(--radius); border: 1px solid transparent; cursor: pointer; transition: background .2s, border-color .2s; }
+		.prow:hover { background: var(--card); border-color: var(--border); }
+		.prow:hover h3 { color: var(--accent); }
+		.thumb { aspect-ratio: 16/10; border-radius: 8px; overflow: hidden; position: relative; display: grid; place-items: center; border: 1px solid var(--border);
+			background: linear-gradient(135deg, rgba(255,255,255,.07), rgba(255,255,255,.01)); }
+		.thumb .ph { font-family: 'JetBrains Mono', monospace; font-size: .72rem; color: var(--muted); text-align: center; padding: 8px; }
+		.thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+		.pmeta { font-family: 'JetBrains Mono', monospace; font-size: .74rem; color: var(--accent); margin-bottom: 6px; display: flex; gap: 14px; }
+		.pmeta span + span { color: var(--muted); }
+		.lvl { font-family: 'JetBrains Mono', monospace; font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; padding: 1px 7px; border-radius: 4px; border: 1px solid var(--border); color: var(--text) !important; }
+		.thumb { background: #fff; }
+		.prow h3 { font-size: 1.15rem; line-height: 1.3; margin-bottom: 6px; transition: color .2s; }
+		.prow h3 .arrow { display: inline-block; transition: transform .2s; }
+		.prow:hover h3 .arrow { transform: translate(3px, -3px); }
+		.pdesc { color: var(--muted); font-size: .92rem; margin-bottom: 12px; }
+		.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+		.chip { font-family: 'JetBrains Mono', monospace; font-size: .7rem; padding: 3px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+
+		/* ---------- 04 Toolbox ---------- */
+		.tools { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+		.tool { padding: 24px; border-radius: var(--radius); background: var(--card); border: 1px solid var(--border); }
+		.tool .k { font-family: 'JetBrains Mono', monospace; font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); }
+		.tool h3 { font-size: 1.05rem; margin: 4px 0 14px; }
+
+		/* ---------- 05 Contact ---------- */
+		.contact h2.big { font-size: clamp(2rem, 4.5vw, 3rem); line-height: 1.1; letter-spacing: -.02em; margin-bottom: 28px; }
+		.contact h2.big span { color: var(--accent); }
+		.contact p { color: var(--muted); max-width: 560px; margin-bottom: 28px; }
+		.btns { display: flex; flex-wrap: wrap; gap: 12px; }
+		.btn { display: inline-block; padding: 11px 22px; border-radius: 8px; font-weight: 600; font-size: .92rem; border: 1px solid var(--accent); transition: all .2s; }
+		.btn.primary { background: var(--accent); color: var(--deep); }
+		.btn.primary:hover { filter: brightness(1.08); }
+		.btn.ghost { color: var(--accent); }
+		.btn.ghost:hover { background: var(--accent-soft); }
+		footer { padding: 32px 0 48px; color: var(--muted); font-size: .8rem; }
+
+		/* ---------- Fenêtre projet avec onglets ---------- */
+		.modal { position: fixed; inset: 0; z-index: 100; background: rgba(0, 0, 0, .6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 16px; }
+		.modal.open { display: flex; }
+		.modal-box { width: min(860px, 100%); max-height: 90vh; overflow-y: auto; position: relative; border-radius: 16px; border: 1px solid var(--border);
+			background: linear-gradient(180deg, var(--mid), var(--deep)); }
+		.modal-head { padding: 30px 30px 0; }
+		.modal-head h3 { font-size: 1.55rem; line-height: 1.25; margin-top: 4px; padding-right: 44px; }
+		.close { position: absolute; top: 16px; right: 16px; width: 38px; height: 38px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); color: var(--text); font-size: 1rem; cursor: pointer; }
+		.close:hover { border-color: var(--accent); color: var(--accent); }
+		.tabs { display: flex; gap: 22px; padding: 22px 30px 0; border-bottom: 1px solid var(--border); overflow-x: auto; }
+		.tab { background: none; border: 0; border-bottom: 2px solid transparent; color: var(--muted); font: inherit; font-size: .9rem; font-weight: 500; padding: 0 0 10px; cursor: pointer; white-space: nowrap; }
+		.tab.active { color: var(--accent); border-color: var(--accent); }
+		.panel { display: none; padding: 24px 30px 32px; }
+		.panel.active { display: block; }
+		.panel p, .panel li { color: var(--muted); margin-bottom: 12px; }
+		.panel ul { padding-left: 20px; }
+		.panel strong { color: var(--text); }
+		.figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 8px; }
+		.figs figure { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: var(--card); }
+		.figs figcaption { padding: 10px 14px; font-size: .85rem; color: var(--muted); }
+		.figs.one { grid-template-columns: 1fr; }
+		.figs figure img { width: 100%; background: #fff; cursor: zoom-in; }
+		.panel h4 { font-size: 1rem; margin: 22px 0 10px; color: var(--text); }
+		.panel h4:first-child { margin-top: 0; }
+		.tbl { width: 100%; border-collapse: collapse; margin: 10px 0 18px; font-size: .88rem; }
+		.tbl th, .tbl td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+		.tbl th { color: var(--accent); font-weight: 600; font-size: .8rem; }
+		.tbl td { color: var(--muted); }
+		.eq { font-family: 'JetBrains Mono', monospace; font-size: .85rem; background: rgba(0,0,0,.25); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin: 10px 0 16px; color: var(--text); overflow-x: auto; white-space: pre; }
+		.key { border-left: 2px solid var(--accent); padding: 4px 0 4px 14px; margin: 16px 0; color: var(--text) !important; }
+		.lightbox { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.88); display: none; align-items: center; justify-content: center; padding: 24px; cursor: zoom-out; }
+		.lightbox.open { display: flex; }
+		.lightbox img { max-width: 100%; max-height: 100%; background: #fff; border-radius: 6px; }
+		.res-link { display: flex; justify-content: space-between; padding: 13px 16px; margin-bottom: 10px; border-radius: 10px; background: var(--card); border: 1px solid var(--border); }
+		.res-link:hover { border-color: var(--accent); color: var(--accent); }
+
+		/* ---------- Tablette / mobile : la colonne de gauche passe en haut ---------- */
+		@media (max-width: 960px) {
+			.layout { grid-template-columns: 1fr; }
+			.side { position: static; height: auto; padding: 48px 20px 32px; border-right: 0; border-bottom: 1px solid var(--border); }
+			.side nav { display: none; }
+			.side h1 { margin-bottom: 20px; }
+			main { padding: 0 20px; }
+			section { padding: 64px 0; }
+			.sec-head { flex-wrap: wrap; }
+			.sec-head p { margin-left: 0; flex-basis: 100%; }
+			.tools { grid-template-columns: 1fr; }
+			.prow { grid-template-columns: 1fr; gap: 14px; padding: 12px; }
+			.exp { grid-template-columns: 1fr; gap: 14px; padding: 20px; }
+		}
+	</style>
+</head>
+<body>
+<div class="layout">
+
+	<!-- ===================== COLONNE DE GAUCHE (fixe) ===================== -->
+	<aside class="side">
+		<h1>Hugo LAM</h1>
+		<nav>
+			<ol>
+				<li><a href="#about"><span class="n">01</span><span class="bar"></span>About me</a></li>
+				<li><a href="#experience"><span class="n">02</span><span class="bar"></span>Experience</a></li>
+				<li><a href="#projects"><span class="n">03</span><span class="bar"></span>Projects</a></li>
+				<li><a href="#toolbox"><span class="n">04</span><span class="bar"></span>Toolbox</a></li>
+				<li><a href="#contact"><span class="n">05</span><span class="bar"></span>Contact</a></li>
+			</ol>
+		</nav>
+		<div class="bottom">
+			<div class="socials">
+				<a href="assets/CV_Hugo_Lam.pdf" target="_blank">CV</a>
+				<a href="https://github.com/TON-PSEUDO" target="_blank">GitHub</a>
+				<a href="https://www.linkedin.com/in/hugolam" target="_blank">LinkedIn</a>
+				<a href="mailto:hugocd.lam@gmail.com">Email</a>
+			</div>
+		</div>
+	</aside>
+
+	<!-- ===================== CONTENU ===================== -->
+	<main>
+
+		<!-- 01 ABOUT -->
+		<section id="about">
+			<div class="sec-head"><span class="n">01</span><h2>About me</h2></div>
+			<p class="intro">Welcome to my portfolio, where I present the projects and professional experiences I have carried out during my university studies.</p>
+			<p class="intro">I am a second-year Master's student in <strong>Mechanical Engineering, Aerodynamics track</strong>, at <strong>Sorbonne Université</strong>, a programme jointly accredited with the <strong>École Nationale Supérieure d'Arts et Métiers (ENSAM)</strong>.</p>
+			<p class="intro">I am looking for a <strong>5 to 6-month internship starting in March 2027</strong>, as part of my second-year Master's, in <strong>CFD and numerical simulation for aerodynamics</strong>.</p>
+			<div class="btns" style="margin-top: 26px;"><a href="assets/CV_Hugo_Lam.pdf" class="btn primary" target="_blank">View my CV →</a></div>
+		</section>
+
+		<!-- 02 EXPERIENCE -->
+		<section id="experience">
+			<div class="sec-head"><span class="n">02</span><h2>Experience</h2></div>
+			<div class="exps">
+				<!-- Copie-colle un bloc <article> pour ajouter une expérience -->
+				<article class="exp">
+					<div class="logo"><img src="assets/logo_dalembert.png" alt="Institut Jean le Rond d'Alembert" /></div>
+					<div>
+						<div class="top"><h3>Research Intern — Bioconvection of Microalgae</h3><span class="when">May 2026 – July 2026</span></div>
+						<p class="where">Jean le Rond d'Alembert Institute, Sorbonne Université · Paris</p>
+						<ul>
+							<li>Numerical modelling of Rayleigh–Bénard bioconvection instabilities driven by the coupling of gravity and gyrotaxis, extended to phototaxis under light illumination.</li>
+							<li>Analysed plume dynamics (spacing, velocities, vorticity) and geometric confinement effects; assessed a concentration-dependent viscosity model.</li>
+							<li>Supervised by José María Fullana and Arnaud Antkowiak, based on Anaëlle Givaudan's doctoral research.</li>
+						</ul>
+						<div class="foot">
+							<div class="chips"><span class="chip">Basilisk</span><span class="chip">ParaView</span><span class="chip">Python</span><span class="chip">Bioconvection</span></div>
+							<button class="more" onclick="openModal(DETAILS.bioconvection)">More details →</button>
+						</div>
+					</div>
+				</article>
+				<article class="exp">
+					<div class="logo"><img src="assets/logo_cathay.png" alt="Cathay Pacific" /></div>
+					<div>
+						<div class="top"><h3>Aircraft Maintenance Intern</h3><span class="when">July 2024</span></div>
+						<p class="where">Cathay Pacific · Paris-Charles de Gaulle Airport</p>
+						<ul>
+							<li>Conducted arrival and transit walkaround inspections on Boeing 777-300ER and Boeing 747-400 aircraft, strictly following the manufacturer's Aircraft Maintenance Manual (AMM) procedures.</li>
+							<li>Supported line maintenance operations: engine oil replenishment, exterior lighting checks and cabin safety inspections.</li>
+						</ul>
+						<div class="chips"><span class="chip">Line maintenance</span><span class="chip">Boeing 777-300ER</span><span class="chip">Boeing 747-400</span><span class="chip">AMM</span></div>
+					</div>
+				</article>
+			</div>
+		</section>
+
+		<!-- 03 PROJECTS (générés depuis la liste PROJETS en bas du fichier) -->
+		<section id="projects">
+			<div class="sec-head"><span class="n">03</span><h2>Projects</h2><p>Click a project for details</p></div>
+			<div class="plist" id="plist"></div>
+		</section>
+
+		<!-- 04 TOOLBOX -->
+		<section id="toolbox">
+			<div class="sec-head"><span class="n">04</span><h2>Toolbox</h2></div>
+			<div class="tools">
+				<div class="tool">
+					<span class="k">Programming</span>
+					<h3>Languages &amp; environment</h3>
+					<div class="chips"><span class="chip">Python</span><span class="chip">NumPy</span><span class="chip">scikit-learn</span><span class="chip">C</span><span class="chip">Linux</span></div>
+				</div>
+				<div class="tool">
+					<span class="k">Data analysis &amp; visualisation</span>
+					<h3>Post-processing</h3>
+					<div class="chips"><span class="chip">ParaView</span><span class="chip">Matplotlib</span><span class="chip">Gnuplot</span><span class="chip">Jupyter Notebook</span><span class="chip">Spyder</span></div>
+				</div>
+				<div class="tool">
+					<span class="k">Numerical methods</span>
+					<h3>Discretisation &amp; modelling</h3>
+					<div class="chips"><span class="chip">Finite volume</span><span class="chip">Finite element</span><span class="chip">Finite differences</span><span class="chip">RANS turbulence modelling</span><span class="chip">Explicit / implicit time schemes</span></div>
+				</div>
+				<div class="tool">
+					<span class="k">CFD &amp; simulation codes</span>
+					<h3>Solvers &amp; meshing</h3>
+					<div class="chips"><span class="chip">OpenFOAM</span><span class="chip">Basilisk</span><span class="chip">aerodynamics (RANS–RSM)</span><span class="chip">Gmsh</span></div>
+				</div>
+			</div>
+		</section>
+
+		<!-- 05 CONTACT -->
+		<section id="contact" class="contact">
+			<div class="sec-head"><span class="n">05</span><h2>Contact</h2></div>
+			<h2 class="big">Let's get in <span>touch</span>.</h2>
+			<div class="btns">
+				<a href="mailto:hugocd.lam@gmail.com" class="btn primary">Email me</a>
+				<a href="https://www.linkedin.com/in/hugolam" class="btn ghost" target="_blank">LinkedIn</a>
+			</div>
+		</section>
+
+		<footer class="mono">© Hugo Lam</footer>
+	</main>
+</div>
+
+<!-- ===================== FENÊTRE PROJET ===================== -->
+<div class="modal" id="modal" onclick="if (event.target === this) closeModal()">
+	<div class="modal-box">
+		<button class="close" onclick="closeModal()" aria-label="Close">✕</button>
+		<div class="modal-head">
+			<div class="pmeta"><span id="m-tag"></span><span id="m-date"></span><span id="m-lvl" class="lvl"></span></div>
+			<h3 id="m-title"></h3>
+		</div>
+		<div class="tabs" id="m-tabs"></div>
+		<div id="m-panels"></div>
+	</div>
+</div>
+
+<div class="lightbox" id="lightbox"><img alt="" /></div>
+
+<script>
+	/* =====================================================================
+	   TES PROJETS : modifie ou ajoute un bloc { ... } (textes en anglais).
+	   - image : miniature (ex. "assets/projet.png"), laisse "" sinon
+	   - onglets : chaque entrée = un onglet dans la fenêtre du projet
+	   ===================================================================== */
+	const fig = (src, cap) => `<figure><img src="assets/${src}" alt="${cap}" /><figcaption>${cap}</figcaption></figure>`;
+	const PROJETS = [
+		/* ---------------- 1. BACTERIAL PATTERNS ---------------- */
+		{
+			tag: "SCIENTIFIC COMPUTING · PYTHON",
+			date: "Nov – Dec 2025",
+			level: "Master",
+			titre: "Bacterial Pattern Formation: Reaction–Diffusion Modelling",
+			resume: "Numerical simulation of how bacterial colonies self-organise into spots, stripes and labyrinths, using the Gray–Scott and Kawasaki–Murray reaction–diffusion models.",
+			outils: ["Python", "NumPy", "Finite differences", "Turing instability"],
+			image: "assets/bact_thumb.png",
+			onglets: {
+				"Overview": `
+					<p><strong>Team:</strong> Hugo Lam &amp; Zainab Ishtiaq — <strong>Supervisors:</strong> José María Fullana &amp; Alice Marcotte (Sorbonne Université)</p>
+					<p>Colonies of bacteria such as <em>Bacillus subtilis</em> growing on a nutrient plate form complex patterns: spots, rings, labyrinths, branches. The question was whether a simple <strong>local</strong> model, coupling reaction and diffusion, can generate such ordered structures with no external signal.</p>
+					<ul>
+						<li>How can diffusion + local reaction produce complex, ordered structures?</li>
+						<li>Which parameters (feed and kill rates, diffusion ratio, initial seed) control whether patterns appear, and their shape?</li>
+						<li>Can these patterns be reproduced numerically in 2D?</li>
+					</ul>`,
+				"Method": `
+					<h4>Gray–Scott model</h4>
+					<p>u: nutrient concentration, v: bacterial density (both non-dimensional, bounded in [0, 1]). The autocatalytic term uv² (u + 2v → 3v) amplifies bacteria locally, while diffusion, feed F and kill rate k stabilise it.</p>
+					<div class="eq">∂u/∂t = Du ∇²u − u v² + F (1 − u)
+∂v/∂t = Dv ∇²v + u v² − (F + k) v</div>
+					<h4>Kawasaki–Murray model</h4>
+					<p>A more realistic bacterial model with a <strong>non-linear, density-dependent diffusion</strong> and a noisy motility field σ(x), meant to produce branching (dendritic) colonies.</p>
+					<div class="eq">∂n/∂t = ∇²n − n b
+∂b/∂t = ∇·( σ(x) n b ∇b ) + n b</div>
+					<h4>Numerics</h4>
+					<ul>
+						<li>2D grid, 5-point finite-difference Laplacian; explicit Euler in time, with clipping to keep densities in [0, 1].</li>
+						<li>Homogeneous Neumann boundary conditions (zero flux, like a closed Petri dish), implemented with edge padding.</li>
+						<li>Kawasaki–Murray: Gaussian bacterial droplet on a uniform nutrient field; explicit stability limit Δt ≲ h² / max(D), i.e. Δt ≈ 10⁻⁴ and many iterations.</li>
+					</ul>`,
+				"Results": `
+					<h4>Influence of the initial seed</h4>
+					<div class="figs one">${fig('bact_initial_size.jpg', 'Gray–Scott: time evolution (left → right) for four initial seed sizes')}</div>
+					<p>A seed that is too small never exceeds the autocatalysis threshold and dies out; a large enough seed triggers a front instability that grows into crosses, stars, then labyrinths.</p>
+					<h4>Feed and kill rates (F, k)</h4>
+					<div class="figs one">${fig('bact_fk_unstable.jpg', 'Gray–Scott: patterns in the unstable regime for several (F, k) pairs')}</div>
+					<p>For k &lt; 0.035 the uniform state is stable: perturbations are damped. Above it, perturbations are amplified — a <strong>Turing-type instability</strong> — and organised patterns appear.</p>
+					<h4>Diffusion coefficients</h4>
+					<div class="figs one">${fig('bact_diffusion.jpg', 'Gray–Scott: effect of (Du, Dv)')}</div>
+					<p>Patterns require Du ≫ Dv: nutrients spread fast while bacteria stay localised, giving fine, sharp structures. Increasing Dv widens and smooths them; if both are large, diffusion erases all patterns.</p>
+					<h4>Kawasaki–Murray</h4>
+					<div class="figs one">${fig('bact_kawasaki_murray.png', 'Kawasaki–Murray: bacterial density over time')}</div>
+					<p>We recovered the radial expansion of the colony and nutrient depletion at its centre, but <strong>not the expected dendritic branches</strong>.</p>`,
+				"Takeaways": `
+					<ul>
+						<li>Complex, ordered structures can emerge from purely local rules, through the competition between autocatalysis and diffusion.</li>
+						<li>Pattern formation only happens in a narrow unstable region of parameter space: (F, k) selects the regime, Du/Dv sets the spatial scale.</li>
+						<li>Practical numerics: explicit schemes, CFL-type stability limits, boundary-condition implementation, positivity of the solution.</li>
+					</ul>
+					<p class="key">Limitation and next step: the Kawasaki–Murray branches did not appear. The explicit scheme forced very small time steps, which limited the simulated time and resolution. A semi-implicit or ADI scheme for the non-linear diffusion, a finer grid and a lower initial nutrient level (the regime in which branching is expected) would be the next things to try.</p>
+					<h4>Resources</h4>
+					<a class="res-link" href="assets/slides_bacterial_patterns.pdf" target="_blank">Presentation slides (PDF, French) <span>→</span></a>`
+			}
+		},
+
+		/* ---------------- 2. GRAVITY DAM (FEM) ---------------- */
+		{
+			tag: "STRUCTURAL MECHANICS · FEM",
+			date: "Dec 2025 – Jan 2026",
+			level: "Master",
+			titre: "Gravity Dam Under Water Pressure: Linear and Quadratic Elements",
+			resume: "Plane-strain linear-elastic analysis of a triangular gravity dam: displacement at the crest and stress concentration at the toe, comparing T3 and T6 elements and the effect of self-weight.",
+			outils: ["Python", "Gmsh", "Finite element method", "Linear elasticity"],
+			image: "assets/dam_vonmises_T3.png",
+			onglets: {
+				"Overview": `
+					<p>Goal: estimate the <strong>crest displacement</strong> of a gravity dam loaded by hydrostatic water pressure, and locate the most stressed region, using the finite element method.</p>
+					<ul>
+						<li>Triangular dam cross-section, 2D linear elasticity, clamped base, hydrostatic pressure on the upstream face.</li>
+						<li>Study the influence of mesh refinement and element type: linear <strong>T3</strong> vs quadratic <strong>T6</strong>.</li>
+						<li>Add the dam's self-weight and check the energy balance.</li>
+					</ul>`,
+				"Method": `
+					<ul>
+						<li><strong>Pre-processing:</strong> geometry and mesh defined in Gmsh (<code>.geo</code>), node coordinates, connectivity and boundary conditions.</li>
+						<li><strong>Solving:</strong> assembly of the stiffness matrix and load vector (surface pressure, then volume force), Dirichlet conditions at the base.</li>
+						<li><strong>Post-processing:</strong> deformed shape, σ<sub>xx</sub>, σ<sub>yy</sub>, σ<sub>xy</sub>, von Mises stress, crest displacement |u(C)|, internal energy and external work.</li>
+						<li><strong>Convergence:</strong> mesh refinement up to ~32 000 nodes, for T3 and T6.</li>
+					</ul>`,
+				"Results": `
+					<div class="figs">
+						${fig('dam_deformed_T3.png', 'Deformed shape (T3, amplified): maximum displacement at the crest, clamped base')}
+						${fig('dam_vonmises_T3.png', 'Von Mises stress (T3): concentration at the toe of the dam')}
+					</div>
+					<p>The maximum displacement is at the crest; stresses concentrate at the <strong>toe</strong> (point A), where the clamped base meets the loaded face.</p>
+					<div class="figs">
+						${fig('dam_conv_vm_T3.png', 'Peak von Mises stress vs number of nodes (T3)')}
+						${fig('dam_conv_vm_T6.png', 'Peak von Mises stress vs number of nodes (T6)')}
+					</div>
+					<p>T6 elements give smoother fields and reach a given accuracy with fewer nodes than T3, which are too stiff because of their constant strain.</p>
+					<h4>Effect of self-weight</h4>
+					<table class="tbl">
+						<tr><th></th><th>T3</th><th>T3 + gravity</th><th>T6</th><th>T6 + gravity</th></tr>
+						<tr><td>σ<sub>VM</sub>(A) [Pa]</td><td>5.9·10⁵</td><td>4.1·10⁵</td><td>5.4·10⁵</td><td>3.3·10⁵</td></tr>
+						<tr><td>|u(C)| [m]</td><td>3.6·10⁻⁴</td><td>3.2·10⁻⁴</td><td>3.9·10⁻⁴</td><td>3.0·10⁻⁴</td></tr>
+					</table>
+					<p>Self-weight adds compression that counteracts the overturning effect of the water: both the crest displacement and the peak stress decrease.</p>`,
+				"Takeaways": `
+					<ul>
+						<li>Element order matters: quadratic elements capture stress gradients far better for the same number of nodes.</li>
+						<li>Global quantities (displacement, potential energy) converge almost immediately, whereas the <strong>peak stress keeps increasing</strong> with refinement.</li>
+						<li>Gravity stabilises the dam, reducing both displacement and peak stress.</li>
+					</ul>
+					<p class="key">Interpretation: the peak stress sits at a re-entrant corner where the clamped base meets the loaded face, a geometric singularity. Mesh refinement there does not converge, so engineering checks rely on displacements, energies or stresses evaluated away from the corner.</p>
+					<h4>Resources</h4>
+					<a class="res-link" href="assets/report_gravity_dam.pdf" target="_blank">Report (PDF, French) <span>→</span></a>`
+			}
+		},
+
+		/* ---------------- 3. NACA 0012 ---------------- */
+		{
+			tag: "CFD · RANS",
+			date: "Apr – May 2025",
+			level: "Bachelor",
+			titre: "Transonic Flow Around a NACA 0012 Airfoil",
+			resume: "RANS simulation of the NACA 0012 from Mach 0.35 to 2.0: shock formation, drag divergence near Mach 0.8–0.9, and comparison with NASA wind-tunnel data.",
+			outils: ["RANS (RSM)", "ParaView", "Gnuplot", "Linux"],
+			image: "assets/naca_mach_082.png",
+			onglets: {
+				"Overview": `
+					<p><strong>Team:</strong> Hugo Lam &amp; Jiacheng Zhao — course: compressible viscous flows</p>
+					<p>The symmetric NACA 0012 is a standard benchmark in aerodynamics. The aim was to capture the <strong>drag divergence</strong> of an airfoil at high subsonic Mach numbers, where the drag coefficient rises sharply, and to validate the simulations against the experimental data of Harris (Langley 8-ft Transonic Pressure Tunnel) and McCroskey's critical review.</p>
+					<p><strong>Reference case:</strong> M<sub>∞</sub> = 0.82, Re<sub>c</sub> = 6·10⁶, α = 0°, T<sub>t</sub> = 316 K, Tu = 1 %.</p>`,
+				"Method": `
+					<ul>
+						<li><strong>Solver:</strong> the <em>aerodynamics</em> research code (Gerolymos &amp; Vallet), steady compressible <strong>RANS</strong> with a <strong>Reynolds-Stress Model (RSM)</strong>, chosen over Spalart–Allmaras or k–ω for its better handling of shock / boundary-layer interaction.</li>
+						<li><strong>Mesh:</strong> refined near the wall to resolve the boundary layer and shocks, coarsened far away; domain extending 15–20 chords to avoid boundary effects; ~30 min per run.</li>
+						<li><strong>Boundary conditions:</strong> Riemann-invariant far field, isothermal no-slip wall, boundary-layer trip set to match the experimental transition.</li>
+						<li><strong>Convergence:</strong> monitored on C<sub>L</sub>, C<sub>D</sub> and residuals (stable after ~1 400 iterations).</li>
+						<li><strong>Sweep:</strong> M<sub>∞</sub> from 0.35 to 2.0; post-processing of p, T, Mach fields and C<sub>p</sub> in ParaView and Gnuplot.</li>
+					</ul>`,
+				"Results": `
+					<h4>Drag divergence</h4>
+					<div class="figs one">${fig('naca_cd_mach.png', 'C<sub>D</sub> vs M<sub>∞</sub>: total, pressure and friction drag, with the experimental envelope')}</div>
+					<p>C<sub>D</sub> jumps between M = 0.8 and 0.9. The rise comes almost entirely from <strong>pressure (wave) drag</strong>; friction drag stays small and nearly constant. Results follow the upper bound of the experimental envelope up to M = 1.</p>
+					<h4>Shock formation</h4>
+					<div class="figs">
+						${fig('naca_mach_076.png', 'Mach field, M<sub>∞</sub> = 0.76: a small supersonic pocket appears (dark blue)')}
+						${fig('naca_mach_082.png', 'Mach field, M<sub>∞</sub> = 0.82: supersonic regions up to M ≈ 1.3 closed by shocks')}
+					</div>
+					<div class="figs one">${fig('naca_mach_105.png', 'Mach field, M<sub>∞</sub> = 1.05: fully supersonic free stream, detached bow shock and trailing-edge shocks')}</div>
+					<p>A local supersonic region first appears around M = 0.76. As M increases it grows and the terminating shock moves aft along the chord, which increases pressure drag.</p>
+					<h4>Comparison with experiments</h4>
+					<div class="figs">
+						${fig('naca_cp_m050.png', 'C<sub>p</sub> at M = 0.50: excellent agreement')}
+						${fig('naca_cp_m082.png', 'C<sub>p</sub> at M = 0.82: shock position differs')}
+					</div>
+					<p>Agreement is very good below M = 0.80. Beyond it, the predicted shock position departs from the measurements.</p>`,
+				"Takeaways": `
+					<ul>
+						<li>Physical understanding of the transonic regime: supersonic pockets, shock formation, aft shock migration and wave drag.</li>
+						<li>Validation mindset: comparing a simulation to experiments means accounting for both sides' uncertainties. The transonic tunnel data are scattered (McCroskey), and wall interference and blockage in the Langley tunnel become significant at high speed.</li>
+						<li>Hands-on use of a research RANS code, Linux environment, convergence monitoring, ParaView post-processing.</li>
+					</ul>
+					<p class="key">What I would add today: a mesh-convergence study and a comparison of turbulence models (RSM vs k–ω SST) at M = 0.80–0.84, to separate modelling error from experimental bias in the shock position.</p>
+					<h4>Resources</h4>
+					<a class="res-link" href="assets/report_naca0012.pdf" target="_blank">Full report (PDF, French) <span>→</span></a>`
+			}
+		},
+
+		/* ---------------- 4. DIGIT CLASSIFIER ---------------- */
+		{
+			tag: "MACHINE LEARNING · PYTHON",
+			date: "Dec 2023 – Jan 2024",
+			level: "Bachelor",
+			titre: "Handwritten Digit Classifier",
+			resume: "Dimensionality reduction (PCA, t-SNE), supervised k-nearest neighbours and unsupervised k-means on 4 000 handwritten digit images.",
+			outils: ["Python", "scikit-learn", "PCA / t-SNE", "k-NN / k-means"],
+			image: "assets/digit_tsne.png",
+			onglets: {
+				"Overview": `
+					<p><strong>Team:</strong> Hugo Lam &amp; Aram Handian — course: Data Science by Example</p>
+					<p>Complete study of a dataset of 4 000 handwritten digits (28 × 28 = 784-pixel images, classes 0–9): visualisation, supervised classification and unsupervised clustering, comparing raw data with two dimensionality-reduction methods.</p>`,
+				"Method": `
+					<ul>
+						<li><strong>Visualisation:</strong> projection to 2D with PCA (linear) and t-SNE (non-linear).</li>
+						<li><strong>Supervised:</strong> k-nearest neighbours, 70 % / 30 % train–test split, accuracy and error as a function of k.</li>
+						<li><strong>Unsupervised:</strong> k-means with 10 clusters, automatic cluster-to-class mapping, accuracy computed with our own function.</li>
+					</ul>`,
+				"Results": `
+					<div class="figs">
+						${fig('digit_pca.png', 'PCA projection: classes overlap')}
+						${fig('digit_tsne.png', 't-SNE projection: classes much better separated')}
+					</div>
+					<table class="tbl">
+						<tr><th>Accuracy</th><th>Raw data (784 D)</th><th>PCA (2 D)</th><th>t-SNE (2 D)</th></tr>
+						<tr><td>k-NN</td><td><strong>≈ 93 %</strong> (k = 1)</td><td>≈ 47 % (k = 150)</td><td>≈ 76 % (k ≈ 15)</td></tr>
+						<tr><td>k-means</td><td>54 %</td><td>43 %</td><td><strong>61 %</strong></td></tr>
+					</table>
+					<div class="figs">
+						${fig('digit_knn_raw.png', 'k-NN on raw data: accuracy vs k (best at k = 1)')}
+						${fig('digit_5_vs_6.png', 'Ambiguous samples: a "5" and a "6" that are hard to tell apart')}
+					</div>`,
+				"Takeaways": `
+					<ul>
+						<li>k-NN works best on the full 784-dimensional data: projecting to 2D throws away the information that separates the classes.</li>
+						<li>For clustering, t-SNE helps because it preserves local neighbourhoods. It remains a visualisation tool, though: it cannot project new samples, so it is not a reliable preprocessing step for a classifier.</li>
+						<li>Errors are dominated by genuinely ambiguous digits. Better features or a convolutional network would be the natural next step.</li>
+					</ul>
+					<h4>Resources</h4>
+					<a class="res-link" href="assets/report_digit_classifier.pdf" target="_blank">Report (PDF, French) <span>→</span></a>`
+			}
+		}
+	];
+
+	/* =====================================================================
+	   DÉTAILS DES EXPÉRIENCES (bouton "More details" dans Experience)
+	   ===================================================================== */
+	const DETAILS = {
+		bioconvection: {
+			tag: "RESEARCH INTERNSHIP · M1",
+			date: "May – July 2026",
+			titre: "Bioconvection of Microalgae",
+			onglets: {
+				"Overview": `
+					<p><strong>Group internship:</strong> Hugo Lam &amp; Zainab Ishtiaq (M1 CompMech &amp; M1 MF2A)<br />
+					<strong>Supervisors:</strong> José María Fullana &amp; Arnaud Antkowiak — Institut Jean le Rond d'Alembert<br />
+					<strong>Background:</strong> based on the PhD thesis of Anaëlle Givaudan</p>
+					<h4>Physics</h4>
+					<p>Bioconvection is a self-organisation phenomenon that here resembles a Rayleigh–Bénard-type instability. Gyrotaxis drives microalgae to accumulate at the surface, creating a dense, gravitationally unstable layer. Once the critical Rayleigh number is exceeded, this layer collapses under gravity and forms plumes that are continuously regenerated.</p>
+					<div class="figs one">
+						${fig('bioconv_no_light.png', 'Algae concentration N<sub>p</sub> — without light')}
+						${fig('bioconv_light.png', 'Algae concentration N<sub>p</sub> — with light')}
+					</div>
+					<h4>Objectives</h4>
+					<ul>
+						<li>Assess the influence of a viscosity μ depending on the local algae concentration, compared with a constant-viscosity model (without light).</li>
+						<li>Quantify the influence of the domain geometry (edge effects), comparing a fixed and a variable length L (without light).</li>
+						<li>Study the influence of phototaxis on the plume migration velocity (with light).</li>
+					</ul>`,
+				"Edge effects": `
+					<p>The experimental geometry imposes <strong>L × h = 8</strong>. We compared a fixed box (L = 20) with a box adjusted to this ratio.</p>
+					<div class="figs">
+						${fig('bioconv_edge_spacing.png', 'Effect of box-size adjustment on plume spacing Λ')}
+						${fig('bioconv_edge_velocities.png', 'Sinking and rising fluid velocities vs. depth h')}
+					</div>
+					<div class="figs one">${fig('bioconv_edge_energy.png', 'Time evolution of the global kinetic energy: fixed vs. adjusted L')}</div>
+					<ul>
+						<li>Fixing L = 20 introduces a geometric bias at the extremes (confinement imposed on the convection rolls), so adjusting L is essential a priori.</li>
+						<li>The bioconvection dynamics (sinking and rising velocities, vorticity intensity) remain governed by h and the fluid properties.</li>
+						<li>Energy monitoring confirms that the critical Rayleigh threshold is crossed between h = 0.1 and h = 0.2 cm (onset of plumes).</li>
+					</ul>`,
+				"Viscosity": `
+					<div class="figs one">${fig('bioconv_viscosity.png', 'Effect of viscosity on plume spacing Λ: constant vs. variable μ')}</div>
+					<p class="key">The constant-viscosity approximation is relevant: it captures the essential physics of the problem while reducing the computational cost, without loss of accuracy.</p>`,
+				"Migration": `
+					<div class="figs one">${fig('bioconv_migration.png', 'Horizontal plume velocity vs. position relative to the light, for several depths h (t = 0.5 s)')}</div>
+					<p class="key">The migration velocity increases with the basin depth h and with proximity to the light source: convection and phototaxis reinforce each other.</p>`,
+				"Conclusion": `
+					<p>Bioconvection results from a coupling between the physical parameters of the system, such as the basin depth h or the boundary conditions, and biological and environmental factors such as the algae swimming speed and light.</p>
+					<h4>Resources</h4>
+					<a class="res-link" href="assets/poster_bioconvection_EN.pdf" target="_blank">Poster (PDF) <span>→</span></a>`
+			}
+		}
+	};
+
+	/* ---------- Génération de la liste des projets (pas besoin de modifier) ---------- */
+	document.getElementById('plist').innerHTML = PROJETS.map((p, i) => `
+		<article class="prow" onclick="openModal(PROJETS[${i}])">
+			<div class="thumb"><span class="ph">${p.tag}</span>${p.image ? `<img src="${p.image}" alt="" onerror="this.remove()" />` : ''}</div>
+			<div>
+				<div class="pmeta"><span>${p.tag}</span><span>${p.date}</span>${p.level ? `<span class="lvl">${p.level}</span>` : ''}</div>
+				<h3>${p.titre} <span class="arrow">↗</span></h3>
+				<p class="pdesc">${p.resume}</p>
+				<div class="chips">${p.outils.map(o => `<span class="chip">${o}</span>`).join('')}</div>
+			</div>
+		</article>`).join('');
+
+	/* ---------- Fenêtre à onglets ---------- */
+	const modal = document.getElementById('modal');
+	function openModal(p) {
+		const names = Object.keys(p.onglets);
+		document.getElementById('m-tag').textContent = p.tag;
+		document.getElementById('m-date').textContent = p.date;
+		const lv = document.getElementById('m-lvl'); lv.textContent = p.level || ''; lv.style.display = p.level ? '' : 'none';
+		document.getElementById('m-title').textContent = p.titre;
+		document.getElementById('m-tabs').innerHTML = names.map((n, k) => `<button class="tab ${k ? '' : 'active'}" onclick="showTab(${k})">${n}</button>`).join('');
+		document.getElementById('m-panels').innerHTML = names.map((n, k) => `<div class="panel ${k ? '' : 'active'}">${p.onglets[n]}</div>`).join('');
+		modal.classList.add('open'); document.body.style.overflow = 'hidden';
+		modal.querySelector('.modal-box').scrollTop = 0;
+	}
+	function showTab(k) {
+		document.querySelectorAll('.tab').forEach((t, j) => t.classList.toggle('active', j === k));
+		document.querySelectorAll('.panel').forEach((t, j) => t.classList.toggle('active', j === k));
+	}
+	function closeModal() { modal.classList.remove('open'); document.body.style.overflow = ''; }
+	/* ---------- Agrandir une figure au clic ---------- */
+	const lb = document.getElementById('lightbox');
+	document.getElementById('m-panels').addEventListener('click', e => {
+		if (e.target.matches('figure img')) { lb.querySelector('img').src = e.target.src; lb.classList.add('open'); }
+	});
+	lb.addEventListener('click', () => lb.classList.remove('open'));
+	document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (lb.classList.contains('open')) lb.classList.remove('open'); else closeModal(); } });
+
+	/* ---------- Surligne la section en cours dans le menu de gauche ---------- */
+	const links = document.querySelectorAll('.side nav a');
+	const spy = new IntersectionObserver(es => es.forEach(e => {
+		if (e.isIntersecting) links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+	}), { rootMargin: '-45% 0px -50% 0px' });
+	document.querySelectorAll('main section').forEach(s => spy.observe(s));
+</script>
+</body>
+</html>
